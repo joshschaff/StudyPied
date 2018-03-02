@@ -15,6 +15,7 @@ The modern student is commonly tasked with supplementing their learning via the 
   - [X] Query editing
   - [X] Searching for terms within large guides
   - [ ] Table interpretation
+  - [ ] Custom collections
 - Retrieving data matching term queries from...
   - [x] Quizlet.com
   - [ ] Supplied PDFs
@@ -40,3 +41,10 @@ StudyPied relies on various RESTful APIs and Java libraries to pull in and manag
     - Takes care of inexact (mispelled, altnernative name, etc.)  queries
   - [Google Drive API](https://developers.google.com/drive/v3/web/about-sdk) : Used for import and export to Drive services
 - **[Quizlet API](https://quizlet.com/api/)** : Retrieves user generated definitions from Quizlet.com
+
+### Versioning Plan
+The public API is constrained to the StudyGuide and GeneralTerm classes. Modification of these two structures are to be denoted by major version change. Addition of other features such as import/export methods and new data sources will be denoted by a minor version change.
+- v0.1.0 APUSH specific guide with terms, definitions, queries, and completedness
+- v0.2.0 Guide that takes custom delimiters and categories for any topic
+- v1.0.0 Simple table interpretation support
+- v2.0.0 Images support
