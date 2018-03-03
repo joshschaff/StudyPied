@@ -20,7 +20,7 @@ class StudyGuideBuilder(
     // not gonna do questions and charts, will instead have end delimiter for end of people
     //val quesDelim : String = "Questions"
 
-    private val endDelim : String = "what problem was it trying to solve?"
+    private val quesDelim : String = "questions"
 
     val guide : StudyGuide
 
@@ -59,9 +59,9 @@ class StudyGuideBuilder(
 
         val terms = list2.subList(list2.indexOf(termDelim)+1, list2.indexOf(peopDelim))
                 .map { str -> GeneralTerm(str, "", false) }
-        val people = list2.subList(list2.indexOf(peopDelim)+1, list2.indexOf(endDelim))
+        val people = list2.subList(list2.indexOf(peopDelim)+1, list2.indexOf(quesDelim))
                 .map { str -> GeneralTerm(str, "", false) }
-        val questions = list2.subList(list2.indexOf(endDelim)+1, list2.size)
+        val questions = list2.subList(list2.indexOf(quesDelim)+1, list2.size)
                 .map { str -> GeneralTerm(str, "", false) }
 
         guide= StudyGuide(terms,people,questions,title)
