@@ -47,6 +47,7 @@ public class FileManager <T extends Serializable> {
         objectList = new ArrayList<>();
         // Sets the default directory as the root folder
         this.directory = directory;
+        if (!directory.exists()) directory.mkdirs();
         updateFiles();
         //updateAllObjects();
         //fileList = new ArrayList<>();
@@ -79,7 +80,8 @@ public class FileManager <T extends Serializable> {
         The lambda is smart enough to interpret the both the method signature, and the containing class, all from the
         context and the provided method body. Java 8 scares me sometimes. */
         System.out.println("Checking for files");
-        File[] files = Arrays.stream(directory.listFiles())
+        File[] files =
+                Arrays.stream(directory.listFiles())
                 .filter(f-> f.getName().endsWith(extension)).toArray(File[]::new);
         if (files.length > 0) {
             System.out.println("There are files");

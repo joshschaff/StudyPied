@@ -90,8 +90,21 @@ class StudyPied : Application() {
         if (fileManager.objectList.size > 0) {
             fileManager.objectList[0]
         } else {
+
+
+            val diag = TextInputDialog()
+            diag.headerText = "Please enter a Google Doc ID which you have access to"
+
+
+            var id = ""
+
+            diag.showAndWait()
+                    .ifPresent({ response ->
+                        id = response
+                    })
+
             println("MAKING A NEW STUDY GUIDE TF")
-            val _sg = DriveAPI.StudyGuideBuilder("1FWatZZUFOhlltMeWc3sWR99McHQuCqiOAf82XoHzHYA", GoogleAuthenticator().driveService).guide
+            val _sg = DriveAPI.StudyGuideBuilder(id, GoogleAuthenticator().driveService).guide
             println("serializng:${fileManager.safelySerialize(_sg, FILE_NAME)}")
             _sg
         }

@@ -53,6 +53,10 @@ class StudyGuideBuilder(
 
         println("terms index: ${list2.indexOf("terms")}")
 
+        println("term delim index: ${list2.indexOf(termDelim)}")
+        println("people delim index: ${list2.indexOf(peopDelim)}")
+
+
         val terms = list2.subList(list2.indexOf(termDelim)+1, list2.indexOf(peopDelim))
                 .map { str -> GeneralTerm(str, "", false) }
         val people = list2.subList(list2.indexOf(peopDelim)+1, list2.indexOf(endDelim))

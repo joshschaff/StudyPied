@@ -11,9 +11,11 @@ import javafx.collections.FXCollections
 import javafx.scene.control.ProgressBar
 import org.apache.http.client.fluent.Request
 import org.apache.http.client.utils.URIBuilder
+import org.apache.http.client.utils.URLEncodedUtils
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.URI
+import java.net.URLEncoder
 import java.util.concurrent.FutureTask
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -56,9 +58,9 @@ class SearchResults(val query: String, val progressBar : ProgressBar, var listVi
                 .setScheme("https")
                 .setHost("www.googleapis.com")
                 .setPath("/customsearch/v1")
-                .setParameter("cx", "002652694160528428543:sh8jtnkkaew")
-                .setParameter("key", "AIzaSyC7KUL7MKqmqpFucO3CgbuEEMoYO8rPPTg")
-                .setParameter("q", "apush ${query}")
+                .addParameter("cx", "002652694160528428543:sh8jtnkkaew")
+                .addParameter("key", "AIzaSyC7KUL7MKqmqpFucO3CgbuEEMoYO8rPPTg")
+                .addParameter("q", "apush ${query}")
                 .build()
 
         //println(uri4)
