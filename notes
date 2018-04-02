@@ -1,3 +1,11 @@
+TODO::
+  -Update query in term list when modified
+  -Place query name in query button and update on change
+  -change term field of GeneralTerm to var
+  	-Add "<<" and ">>" buttons between query and term on GUI to sync one with the other
+	-Add popup "are you sure you want to override this term name (only the name will be lost, the definition will remain)" for "<<" button
+
+
 What do we have to do when we boot up program??
 	1) Establish some study set
 		Load one from harddrive (most likely)
