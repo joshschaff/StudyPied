@@ -36,7 +36,7 @@ import javafx.scene.layout.BorderPane
 
 
 
-/*fun depreciated.main(args : Array<String>) {
+/*fun deprecated.main(args : Array<String>) {
 
 
     for (term in SearchResults("remember the maine").terms) {
@@ -315,7 +315,7 @@ class StudyPied : Application() {
 
         BorderPane.setMargin(center,  Insets(15.0))
         
-        //root.children.addAll(listSelector, termManager, progress, depreciated.main)
+        //root.children.addAll(listSelector, termManager, progress, deprecated.main)
 
         
         // used for old copy selection button

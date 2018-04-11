@@ -1,4 +1,6 @@
-import depreciated.OAuthAuthenticator
+package deprecated
+
+import deprecated.OAuthAuthenticator
 import com.google.gson.reflect.TypeToken
 import org.apache.http.client.fluent.Request
 import org.apache.http.client.utils.URIBuilder

@@ -170,7 +170,7 @@ public class FileManager <T extends Serializable> {
 
         } catch (EOFException e) {
             //System.out.println("not the right class");
-            /* This is a now depreciated attempt at syncing references vs real data
+            /* This is a now deprecated attempt at syncing references vs real data
             syncList = new ArrayList<>(fileList.size());
             Collections.copy(syncList, fileList);
             syncList.remove(index); // keep the file list and the object list synced*/

@@ -1,4 +1,4 @@
-package depreciated
+package deprecated
 
 import com.google.api.services.drive.Drive
 import java.io.*

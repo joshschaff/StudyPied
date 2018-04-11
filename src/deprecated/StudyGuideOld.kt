@@ -1,4 +1,4 @@
-package depreciated
+package deprecated
 
 
 //1FWatZZUFOhlltMeWc3sWR99McHQuCqiOAf82XoHzHYA

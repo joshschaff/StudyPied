@@ -1,4 +1,4 @@
-import depreciated.OAuthAuthenticator
+import deprecated.OAuthAuthenticator
 import content.quizletAPI.TokenHeader
 import com.google.gson.reflect.TypeToken
 import java.net.URI
