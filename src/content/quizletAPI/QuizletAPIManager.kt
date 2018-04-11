@@ -1,14 +1,14 @@
-package QuizletAPI
+package content.quizletAPI
 
-import QuizletAPI.Methods.*
-import QuizletAPI.QuizletObject.*
+import content.quizletAPI.Methods.*
+import content.quizletAPI.QuizletObject.*
 import com.google.gson.Gson
 
 
 
 /**
  * This should in essence be a list of mappings to common endpoints
- *  I may want to implement in the future....
+ *  I mhttps://docs.google.com/document/d/1CKP2oSJxruu6dnDwUTP9IE5O1WqemstKJClbLBhq544/editay want to implement in the future....
  * GoogleAPIManager wouldn't be worth it for the one use case of Google Custom Search API
  */
 
@@ -54,7 +54,7 @@ class QuizletAPIManager (val client_id : String) {
      * Its token should not be passed explicitly outside of the Manager
      * As per Quizlet security spec https://quizlet.com/api/2.0/docs/security
      */
-    private val th : TokenHeader = QuizletAuthenticator(client_id).token
+    val th : TokenHeader = QuizletAuthenticator(client_id).token
 
     // GET /users/USERNAME - View basic user information, including their sets, favorites, last 25 sessions, etc.
     fun getUser() : QuizletUser{

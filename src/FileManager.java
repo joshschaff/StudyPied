@@ -2,6 +2,8 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.IntStream;
+import content.publicAPI.*;
+
 
 /**
  * Created by josh on 5/26/17.
@@ -41,6 +43,7 @@ public class FileManager <T extends Serializable> {
     public FileManager(String extension) {
         this(extension, new File(DEFAULT_DIRECTORY));
     }
+    
 
     public FileManager(String extension, File directory) {
         this.extension = extension;

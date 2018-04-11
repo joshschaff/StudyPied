@@ -1,4 +1,4 @@
-package QuizletAPI
+package content.quizletAPI
 
 import org.apache.http.client.fluent.Request
 import org.apache.http.client.utils.URIBuilder

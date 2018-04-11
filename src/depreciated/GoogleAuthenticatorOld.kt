@@ -1,17 +1,15 @@
-import Depreciated.OAuthAuthenticator
-import QuizletAPI.TokenHeader
+import depreciated.OAuthAuthenticator
 import com.google.gson.reflect.TypeToken
 import org.apache.http.client.fluent.Request
 import org.apache.http.client.utils.URIBuilder
 import java.net.URI
-import javax.xml.ws.Response
 
 
 //https://developers.google.com/api-client-library/java/apis/drive/v2
 
 
-class GoogleAuthenticatorOld(): OAuthAuthenticator<DriveAPI.TokenHeader>(
-        type = object : TypeToken<DriveAPI.TokenHeader>() {},
+class GoogleAuthenticatorOld(): OAuthAuthenticator<content.driveAPI.TokenHeader>(
+        type = object : TypeToken<content.driveAPI.TokenHeader>() {},
         clientID = "1025815803277-g9a870ng63af5b9ehkvlrahkacv3iqob.apps.googleusercontent.com",
         scope = "https://www.googleapis.com/auth/drive", // TODO:: switch to https://www.googleapis.com/auth/drive.file, see https://developers.google.com/drive/v3/web/about-auth
         codeHost = "accounts.google.com",

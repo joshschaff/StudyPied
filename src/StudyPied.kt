@@ -1,42 +1,42 @@
-import DriveAPI.GeneralTerm
-import DriveAPI.StudyGuide
-import GUI.Elements.FxUtilTest
-import GUI.Elements.ListManager
+import content.DocxGuideBuilder
+import content.driveAPI.*
+import gui.elements.DefinitionBox
+import gui.elements.FxUtilTest
+import gui.elements.ListManager
 import javafx.application.Application
-import javafx.geometry.Pos
 import javafx.scene.Scene
-import javafx.scene.layout.VBox
 import javafx.stage.Stage
-
-import QuizletAPI.SearchResults
-import QuizletAPI.TermWrapper
-import javafx.application.Platform
-import javafx.beans.value.ChangeListener
+import content.publicAPI.StudyGuide
+import content.quizletAPI.SearchResults
+import content.quizletAPI.TermWrapper
+import content.saveToDocx
 import javafx.collections.FXCollections
-import javafx.collections.ObservableList
-import javafx.event.EventHandler
 import javafx.geometry.Insets
+import javafx.geometry.Orientation
 import javafx.scene.control.*
-import javafx.scene.layout.HBox
-import java.util.concurrent.FutureTask
-import QuizletAPI.QuizletObject.QuizletSet as Set
-import QuizletAPI.QuizletObject.QuizletTerm as QuizletTerm
-
-import GUI.Elements.QuizletResultsListView as QListView
-import javafx.scene.layout.Priority
-import java.io.FileOutputStream
-import javax.swing.text.StyleConstants.setFontSize
-
+import javafx.scene.layout.*
+import content.quizletAPI.QuizletObject.QuizletSet as Set
+import content.quizletAPI.QuizletObject.QuizletTerm as QuizletTerm
+import gui.elements.QuizletResultsListView as QListView
+import content.publicAPI.*
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument
-import java.io.File
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import javafx.scene.layout.ColumnConstraints
+import javafx.scene.layout.Priority
+import javafx.scene.layout.BorderPane
+
+
+
+
 
 
 // Only variable I use twice?
 
 
 
-/*fun main(args : Array<String>) {
+/*fun depreciated.main(args : Array<String>) {
 
 
     for (term in SearchResults("remember the maine").terms) {
@@ -54,6 +54,8 @@ val sgFileID = "1FWatZZUFOhlltMeWc3sWR99McHQuCqiOAf82XoHzHYA"
 class StudyPied : Application() {
 
     companion object {
+        public final val COLUMN_WIDTH = 400.0
+
         @JvmStatic
         fun main(args: Array<String>) {
 
@@ -81,9 +83,9 @@ class StudyPied : Application() {
 
     private val FILE_EXTENSION = "GUIDE"
 
-    private val FILE_NAME = "unit7"
+    private val FILE_NAME = "unit9"
 
-    private val fileManager: FileManager<StudyGuide> = FileManager(FILE_EXTENSION, DATA_STORE_DIR)
+    private val fileManager: FileManager<content.publicAPI.StudyGuide> = FileManager(FILE_EXTENSION, DATA_STORE_DIR)
 
     val sg : StudyGuide by lazy {
         println("objectListSize:${fileManager.objectList.size}")
@@ -104,21 +106,40 @@ class StudyPied : Application() {
                     })
 
             println("MAKING A NEW STUDY GUIDE TF")
-            val _sg = DriveAPI.StudyGuideBuilder(id, GoogleAuthenticator().driveService).guide
-            println("serializng:${fileManager.safelySerialize(_sg, FILE_NAME)}")
+
+
+            val outputStream2 = ByteArrayOutputStream()
+            GoogleAuthenticator().driveService.files()
+                    .export(id, "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                    .executeMediaAndDownloadTo(outputStream2) // https://developers.google.com/drive/v2/web/manage-downloads }
+
+
+            val input: ByteArrayInputStream = ByteArrayInputStream(outputStream2.toByteArray())
+
+            //.executeMediaAndDownloadTo(str)
+            val doc: XWPFDocument = XWPFDocument(input)
+
+
+            //val delimiters : List<String> = listOf("Complete these during the Roundtable.")
+            val delimiters : List<String> = listOf("Terms","People","Concepts")
+
+            var _sg : StudyGuide = DocxGuideBuilder(doc, delimiters).guide
+            //println("serializng:${fileManager.safelySerialize(_sg, FILE_NAME)}")
             _sg
         }
     }
 
-    //val sg : StudyGuide = DriveAPI.StudyGuide("1FWatZZUFOhlltMeWc3sWR99McHQuCqiOAf82XoHzHYA", GoogleAuthenticator().driveService)
+    //val sg : StudyGuide = content.publicAPI.StudyGuide("1FWatZZUFOhlltMeWc3sWR99McHQuCqiOAf82XoHzHYA", GoogleAuthenticator().driveService)
+
+
 
 
     // both default values
-    var selectedList: List<GeneralTerm> = sg.terms
+    var selectedCategory: MutableList<in GeneralTerm> = sg.terms[0]
         set(value) {
             // replace the whole fucking listmanager when we get a new list. Yep.
             // DO I NEED TO UPDATE VIEW THEN??
-            listManager.updateOptions(value)
+            termManager.updateOptions(value)
             //selectedTerm = value[0]x
             selectedTerm = null
             // progressLabel.text = getProgressString()
@@ -126,23 +147,22 @@ class StudyPied : Application() {
         }
 
 
-    val listManager: ListManager = ListManager(selectedList, "Edit Query")
+    val termManager: ListManager = ListManager(selectedCategory, "Edit Query")
 
 
-    var selectedTerm: GeneralTerm? = null //selectedList[0]
+    var selectedTerm: GeneralTerm? = null //selectedCategory[0]
         set(value) {
-            listManager.button.isDisable = value == null
-            listManager.checkBox.isDisable = value == null
+            termManager.button.isDisable = value == null
+            termManager.checkBox.isDisable = value == null
             println("we're changing term")
 
-            fileManager.serialize(sg, FILE_NAME)
 
-            listManager.checkBox.isSelected = value?.complete ?: false
+            termManager.checkBox.isSelected = value?.complete ?: false
 
             // Save the old definition
-            field?.definition = textArea.text
+            saveTerm()
             // Load in the new definition
-            textArea.text = value?.definition
+
 
 
             progressLabel.text = getProgressString()
@@ -152,8 +172,10 @@ class StudyPied : Application() {
             // https://stackoverflow.com/a/9167420
             // SPECIFIES A THREAD (javafx) WITHIN A THREAD (results updating)!!!!!
             if (value != null) {
+                definitionBox.updateTerm(value)
                 Thread(Runnable {
                     progress.progress = 0.0
+                    println("query is: ${value.query}")
                     val sr : SearchResults = SearchResults(value.query, progress, listView)
 
 
@@ -173,16 +195,16 @@ class StudyPied : Application() {
 
     var progress = ProgressBar(1.0)
 
-    var listView: GUI.Elements.QuizletResultsListView = GUI.Elements.QuizletResultsListView(FXCollections
+    var listView: gui.elements.QuizletResultsListView = gui.elements.QuizletResultsListView(FXCollections
             .observableList(FXCollections.observableArrayList()))
                                 // They're already term wrappers
                                 //.map { term -> TermWrapper("", term!!) })))
 
     // The box for entering your definition
-    var textArea: TextArea = TextArea()
+    //var textArea: TextArea = TextArea()
 
 
-
+    var definitionBox : DefinitionBox = DefinitionBox()
 
 
     /* necessary for binding progress bar each time
@@ -196,41 +218,44 @@ class StudyPied : Application() {
     val progressLabel = Label(getProgressString())
 
     fun getProgressString() : String {
-        return "${selectedList.filter { term -> term.complete }.count()}/${selectedList.size}"
+        return "${selectedCategory.filter{t -> (t as GeneralTerm).complete }.count()}/${selectedCategory.size}"
     }
+
+
+    val center = GridPane()
 
     override fun start(primaryStage: Stage) {
 
-        listManager.button.isDisable = true
-        listManager.checkBox.isDisable = true
+        termManager.button.isDisable = true
+        termManager.checkBox.isDisable = true
+
+        
+        val categoryManager : ComboBox<String> = ComboBox(FXCollections.observableList(sg.categories))
+        categoryManager.setOnAction { 
+            selectedCategory= sg.terms[categoryManager.selectionModel.selectedIndex]
+        }
 
 
-
-        val root: VBox = VBox(25.0)
-        root.setAlignment(Pos.CENTER);
-        root.setFillWidth(true);
+        val root: BorderPane = BorderPane()
+        //root.setAlignment(Pos.CENTER);
+        //root.setFillWidth(true);
 
         val listSelector = HBox()
         listSelector.padding = Insets(20.0)
-
-        val tButton = Button("terms")
-        val pButton = Button("people")
-        val qButton = Button("questions")
+        
         val docxButton = Button("save to docx")
 
-        tButton.onAction = EventHandler { selectedList = sg.terms }
-        pButton.onAction = EventHandler { selectedList = sg.people }
-        qButton.onAction = EventHandler { selectedList = sg.questions }
-        docxButton.onAction = EventHandler {saveDocx()}
+        
+        docxButton.setOnAction { saveToDocx(sg, FILE_NAME) }
 
 
-        listSelector.children.addAll(tButton, pButton, qButton, docxButton, progressLabel)
+        listSelector.children.addAll(categoryManager, docxButton, progressLabel)
 
-        listManager.setSelectAction {
-            if (FxUtilTest.getComboBoxValue(listManager.comboBox) != null ) {
-                selectedTerm = FxUtilTest.getComboBoxValue(listManager.comboBox) as GeneralTerm
+        termManager.setSelectAction {
+            if (FxUtilTest.getComboBoxValue(termManager.comboBox) != null ) {
+                selectedTerm = FxUtilTest.getComboBoxValue(termManager.comboBox) as GeneralTerm
             }}
-        listManager.setButtonAction {
+        termManager.setButtonAction {
             TextInputDialog(selectedTerm?.query).showAndWait()
                     .ifPresent({ response ->
                         selectedTerm?.query = response // set query to dialog result
@@ -242,7 +267,11 @@ class StudyPied : Application() {
             // Actually this is not really necessary....
             // Don't need to clog up the UI with the querys...
         }
-        listManager.setCheckAction { selectedTerm?.complete = listManager.checkBox.isSelected }
+        termManager.setCheckAction { selectedTerm?.complete = termManager.checkBox.isSelected }
+
+        val top : TilePane = TilePane(Orientation.HORIZONTAL)
+        top.children.addAll(listSelector,termManager)
+        root.top = top
 
         //val terms: List<QuizletObject.QuizletTerm> = SearchResults(selectedTerm.query).terms
         //listView.terms = FXCollections
@@ -255,13 +284,42 @@ class StudyPied : Application() {
 
         progress.prefWidthProperty().bind(root.widthProperty().subtract(20));  //  -20 is for
         // padding from right and left, since we aligned it to TOP_CENTER.
+        root.bottom = progress
 
 
-        textArea.isWrapText = true
 
-        root.children.addAll(listSelector, listManager, progress, listView, textArea)
 
-        // TODO :: FIND SOME WAY TO CARRY THE TEXT PROPERTY OF LSITCELL OVER TO THIS CLASS
+
+
+
+        /*
+        tiles.setPadding(Insets(20.0, 10.0, 20.0, 0.0))
+        tiles.hgap = 10.0
+        tiles.vgap = 8.0
+        tiles.children.addAll(listView,definitionBox)
+        tiles.maxWidth = Double.MAX_VALUE
+
+        tiles.prefWidth = primaryStage.width*/
+
+        center.add(listView, 0, 0)
+        center.add(definitionBox, 1,0)
+
+
+        listView.prefWidth = 400.00
+        definitionBox.prefWidth = 400.00
+
+
+        //root.add(listView, 0, 1, 1, 2)
+        //root.add(definitionBox, 1, 1, 1, 2)
+        root.center = center
+
+        BorderPane.setMargin(center,  Insets(15.0))
+        
+        //root.children.addAll(listSelector, termManager, progress, depreciated.main)
+
+        
+        // used for old copy selection button
+        /*// TODO :: FIND SOME WAY TO CARRY THE TEXT PROPERTY OF LSITCELL OVER TO THIS CLASS
         listView.selectionModel.selectedItemProperty().addListener(ChangeListener { observableValue, t_old, t_new ->
 
 
@@ -279,7 +337,7 @@ class StudyPied : Application() {
             // submit for execution on FX Application Thread:
             Platform.runLater(updateUITask)
 
-        })
+        })*/
 
 
 
@@ -288,66 +346,34 @@ class StudyPied : Application() {
         primaryStage.setScene(Scene(root));
         primaryStage.show();
 
-        primaryStage.setOnCloseRequest {
-            selectedTerm?.definition = textArea.text
-            fileManager.serialize(sg, FILE_NAME) }
+        primaryStage.minHeight = 600.00
+        primaryStage.minWidth = 800.00
+
+        //root.setPrefSize(800.0,600.0)
+        //root.setMinSize(BorderPane.USE_PREF_SIZE, BorderPane.USE_PREF_SIZE);
+
+        primaryStage.setOnCloseRequest {saveTerm()}
 
         primaryStage.sizeToScene();
     }
-
-
-    fun saveDocx() {
-        // directory + "/" + name + "." + extension
-        var filePath = java.io.File(
-                System.getProperty("user.home"), "StudyPied").path + "/${FILE_NAME}.DOCX"
-        TextInputDialog(filePath).showAndWait()
-                .ifPresent({ response ->
-                    filePath = response
-                })
-        val document = XWPFDocument()
-        for (term :GeneralTerm in sg.terms) {
-            val tmpParagraph = document.createParagraph()
-            val tmpRun = tmpParagraph.createRun()
-            tmpRun.setText("${term.term}")
-            tmpRun.fontSize = 12
-            tmpRun.isBold = true
-
-
-            println(term.definition)
-            val lines : List<String> = term.definition.split(Regex("\\n"))
-            println("term ${term} has ${lines.size} lines")
-            for (line : String in lines) {
-                val tmpParagraph2 = document.createParagraph()
-                val tmpRun2 = tmpParagraph2.createRun()
-                tmpRun2.setText("${line}")
-                tmpRun2.fontSize = 12
-            }
-
-        }
-        for (term :GeneralTerm in sg.people) {
-            val tmpParagraph = document.createParagraph()
-            val tmpRun = tmpParagraph.createRun()
-            tmpRun.setText("${term.term}")
-            tmpRun.fontSize = 12
-            tmpRun.isBold = true
-
-
-            println(term.definition)
-            val lines : List<String> = term.definition.split(Regex("\\n"))
-            println("term ${term} has ${lines.size} lines")
-            for (line : String in lines) {
-                val tmpParagraph2 = document.createParagraph()
-                val tmpRun2 = tmpParagraph2.createRun()
-                tmpRun2.setText("${line}")
-                tmpRun2.fontSize = 12
-            }
-
-        }
-
-
-        document.write(FileOutputStream(File(filePath)))
-        document.close()
+    
+    fun saveTerm() {
+        selectedTerm?.definition = definitionBox.definition
+        fileManager.serialize(sg, FILE_NAME)
     }
+
+
+    fun adjustCenter() {
+        val column1 = ColumnConstraints(40.0, 40.0, java.lang.Double.MAX_VALUE)
+        column1.hgrow = Priority.ALWAYS
+        val column2 = ColumnConstraints(20.0)
+        center.getColumnConstraints().addAll(column1, column2)
+    }
+
+
+
+
+
 
     //override fun stop() {
         //This does nothing to force you to use the quit button

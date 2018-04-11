@@ -1,21 +1,11 @@
-package DriveAPI
-
-import com.google.api.services.drive.Drive
-import java.io.ByteArrayOutputStream
-import java.io.OutputStream
-import java.io.Serializable
+package depreciated
 
 
 //1FWatZZUFOhlltMeWc3sWR99McHQuCqiOAf82XoHzHYA
-
-/**
- * This is a study guide with all of the intiialization off loaded onto individual fields
- * Evidently it did not work
- */
-
+/*
 
 // constructed from a drive file
-/*class StudyGuide(
+class StudyGuideOld(
         id : String,
         drive : Drive) : Serializable {
 
@@ -28,30 +18,15 @@ import java.io.Serializable
 
     private val endDelim : String = "what problem was it trying to solve?"
 
-    private val streamAsString : String
-
-    init{
-        val outputStream : OutputStream = ByteArrayOutputStream()
-        drive.files().export(id, "text/plain").executeMedia().download(outputStream)
-        streamAsString = outputStream.toString()
-    }
-
-    private val masterList : List<String> = streamAsString.toString().split("\n")
-            .filter { s-> !s.isBlank() && !s.isBlank() }.map { str -> str.toLowerCase().trim() }
-
-
-    val terms : List<GeneralTerm> = masterList.subList(masterList.indexOf(termDelim)+1, masterList.indexOf(peopDelim))
-            .map { str -> GeneralTerm(str, "", false) }
-    val people : List <GeneralTerm> = masterList.subList(masterList.indexOf(peopDelim)+1, masterList.indexOf(endDelim))
-            .map { str -> GeneralTerm(str, "", false) }
-    val questions : List <GeneralTerm> = masterList.subList(masterList.indexOf(endDelim)+1, masterList.size)
-            .map { str -> GeneralTerm(str, "", false) }
+    val terms : List<GeneralTerm>
+    val people : List <GeneralTerm>
+    val questions : List <GeneralTerm>
 
 
     // The name of the set, i.e. the unit
-    val title : String = masterList[0]
+    val title : String
 
-    /*init{
+    init{
         //println(drive.files().get(id))
 
         //val str : String
@@ -85,16 +60,16 @@ import java.io.Serializable
                 .map { str -> GeneralTerm(str, "", false) }
         questions = list2.subList(list2.indexOf(endDelim)+1, list2.size)
                 .map { str -> GeneralTerm(str, "", false) }
-    }*/
+    }
 
     fun assemble() : Unit{}
 
 }
 
+*/
 
 
-
-data class GeneralTerm(val term : String, var definition : String, var complete : Boolean) : Serializable {
+/*data class GeneralTerm(val term : String, var definition : String, var complete : Boolean) : Serializable {
     // initial value
     var query : String = term
 

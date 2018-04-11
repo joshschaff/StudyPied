@@ -1,4 +1,4 @@
-package QuizletAPI
+package content.quizletAPI
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -12,7 +12,6 @@ import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.Socket
 import java.net.URI
-import QuizletAPI.RandomString
 import FileManager
 
 
@@ -23,7 +22,7 @@ import FileManager
 
 class QuizletAuthenticator(val client_id : String) {
 
-    val token : TokenHeader by lazy {
+    val token : content.quizletAPI.TokenHeader by lazy {
         println("objectListSize:${fileManager.objectList.size}")
         if (fileManager.objectList.size > 0) {
             fileManager.objectList[0]
@@ -40,7 +39,7 @@ class QuizletAuthenticator(val client_id : String) {
 
     private val FILE_EXTENSION = "QZLT"
 
-    private val fileManager: FileManager<TokenHeader> = FileManager(FILE_EXTENSION, DATA_STORE_DIR)
+    private val fileManager: FileManager<content.quizletAPI.TokenHeader> = FileManager(FILE_EXTENSION, DATA_STORE_DIR)
 
     // TODO: allow the storing of a token so you don't have to authenticate every time lmao (Josh has a filemanager class for serialization) (use encryption?)
 

@@ -1,4 +1,4 @@
-package QuizletAPI;
+package content.quizletAPI;
 
 import java.security.SecureRandom;
 import java.util.Locale;

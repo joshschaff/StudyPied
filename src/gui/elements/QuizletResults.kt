@@ -1,22 +1,11 @@
-package GUI.Elements
+package gui.elements
 
-import QuizletAPI.QuizletObject
-import javafx.beans.value.ChangeListener
-import javafx.beans.value.ObservableValue
-import javafx.collections.ObservableArray
 import javafx.collections.ObservableList
-import javafx.event.ActionEvent
-import javafx.event.EventHandler
 import javafx.scene.control.*
-import QuizletAPI.QuizletObject.QuizletTerm as Term
-import javafx.scene.layout.HBox
+import content.quizletAPI.QuizletObject.QuizletTerm as Term
 import javafx.util.Callback
 import javafx.scene.control.ListCell
-import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
-import sun.misc.Signal.handle
-import QuizletAPI.TermWrapper
-import javafx.geometry.Insets
+import content.quizletAPI.TermWrapper
 
 
 /**
@@ -32,6 +21,9 @@ import javafx.geometry.Insets
  */
 
 
+
+val width = StudyPied.COLUMN_WIDTH - 100.0
+
 // Constructor parameter is in essence a default value
 // Further updates are observed by the items field https://docs.oracle.com/javafx/2/api/javafx/scene/control/ListView.html
 class QuizletResultsListView(terms : ObservableList<TermWrapper>) : ListView<TermWrapper>() {
@@ -40,7 +32,9 @@ class QuizletResultsListView(terms : ObservableList<TermWrapper>) : ListView<Ter
     //var terms : ObservableList<TermWrapper> = terms
 
 
+
     init {
+
         cellFactory = object : Callback<ListView<TermWrapper>, ListCell<TermWrapper>> {
            override fun call(p0: ListView<TermWrapper>): ListCell<TermWrapper> {
                return TermCell()
@@ -48,6 +42,7 @@ class QuizletResultsListView(terms : ObservableList<TermWrapper>) : ListView<Ter
         }
         items = terms
         maxHeight = Double.MAX_VALUE
+        this.prefWidth = StudyPied.COLUMN_WIDTH - 100.0
 
 
 
@@ -67,50 +62,44 @@ internal class TermCell : ListCell<TermWrapper>() {
         } else {
             // see explanation at top of class
 
-
-            val hBox = HBox()
             //hBox.width = listView.width
-            val termBox = TextArea()
-            termBox.isEditable = false
-            termBox.isWrapText = true
-            HBox.setHgrow(termBox, Priority.ALWAYS)
 
-            termBox.text = "[ ${term?.term?.term} / ${term?.setTitle} ]"
-            termBox.text += "\n${term?.term?.definition}"
 
-            termBox.autosize()
+
+
+            val termBox = LabeledTextArea("[ ${term?.term?.term} / ${term?.setTitle} ]", term?.term?.definition ?: "")
+            termBox.textArea.isEditable = false
+            termBox.textArea.isWrapText = true
+            //termBox.maxWidth = super.widthProperty().get() - 25.0
+            termBox.label.isWrapText = true
+            // Something arbitraily small
+            termBox.label.prefWidth = StudyPied.COLUMN_WIDTH-100.0
+            termBox.textArea.prefWidth = StudyPied.COLUMN_WIDTH-100.0
+            termBox.textArea.autosize()
+            //HBox.setHgrow(termBox, Priority.ALWAYS)
+
+
+            //termBox.autosize()
             //hBox.autosize()
 
 
-            val button = Button("Add Selection")
-            VBox.setVgrow(button, Priority.ALWAYS)
-            button.onAction = EventHandler {
-                // Kotlin makes you run your code right in your eventHandler uhhhh....
-                //https://stackoverflow.com/questions/36516330/from-java-to-kotlin
-                //override fun handle(e: ActionEvent) {
-                    println("at least we here")
-                    listView.selectionModel.select(term)
-                    /**
-                     * Takes advantaged of the ListCell's superclass of Labelled by storing the passed textArea in the
-                     * "textArea" property
-                     */
 
-                    println("selected textArea is ${termBox.selectedText}")
+            graphic = termBox
 
-                    // TODO :: if nothing selected just add the whole box
-                    term?.msgCarrier = termBox.selectedText
-                    termBox.end()
+            /*
 
-                    println("msgCarrier property is ${term?.msgCarrier}")
-                //}
-            }
+            text = "[ ${term?.term?.term} / ${term?.setTitle} ]"
+            //isWrapText = true
 
-            hBox.children.addAll(termBox, button)
+            val textArea = TextArea(term?.term?.definition)
+            textArea.isWrapText = true
+            textArea.prefWidth(200.0)
+            graphic = textArea
 
-
-            graphic = hBox
+            this.contentDisplay = ContentDisplay.BOTTOM
             //graphic = (Label(item.toString()))
             //setTextArea(item.toString());
+            this.maxWidth(200.0)*/
         }
 
         //val cell : ListCell<Term> = ListCell()

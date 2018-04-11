@@ -1,4 +1,4 @@
-package GUI.Elements;
+package gui.elements;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -82,7 +82,9 @@ public class FxUtilTest {
                 if (!moveCaretToPos) {
                     caretPos = -1;
                 }
-                moveCaret(t.length());
+                if (t != null) {
+                    moveCaret(t.length());
+                }
                 if (!list.isEmpty()) {
                     comboBox.show();
                 }

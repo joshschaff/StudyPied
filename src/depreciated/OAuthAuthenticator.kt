@@ -1,26 +1,21 @@
-package Depreciated
+package depreciated
 
-import QuizletAPI.RandomString
-import QuizletAPI.TokenHeader
+import content.quizletAPI.RandomString
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import org.apache.http.client.fluent.Request
 import org.apache.http.client.utils.URIBuilder
 import java.io.BufferedReader
-import java.io.IOException
 import java.io.InputStreamReader
 import java.io.PrintWriter
-import java.lang.reflect.Type
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.Socket
 import java.net.URI
-import java.util.*
-import javax.xml.ws.Response
 
 /**
- * The Oauth 2 authentication process has 2 main stages
+ * The Oauth 2 authentication process has 2 depreciated.main stages
  * First, the user is redirected to the api in order to delegate access, and they receive a code
  * Second, the app makes a POST request to an api endpoint with that code, and receives a accessToken
  * These stages are hence referred to as the "code" and "token" processes, and their related values labeled as such

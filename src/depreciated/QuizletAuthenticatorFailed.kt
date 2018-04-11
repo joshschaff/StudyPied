@@ -1,14 +1,13 @@
-import Depreciated.OAuthAuthenticator
-import QuizletAPI.TokenHeader
+import depreciated.OAuthAuthenticator
+import content.quizletAPI.TokenHeader
 import com.google.gson.reflect.TypeToken
 import java.net.URI
 
 import org.apache.http.client.fluent.Request
 import org.apache.http.client.utils.URIBuilder
-import javax.xml.ws.Response
 
 class QuizletAuthenticatorFailed : OAuthAuthenticator<TokenHeader>(
-        type = object : TypeToken<QuizletAPI.TokenHeader>() {},
+        type = object : TypeToken<content.quizletAPI.TokenHeader>() {},
         clientID = "CPkQMhGzqs",
         scope = "read", // Do you need more permissions for write than read?
         codeHost = "quizlet.com",

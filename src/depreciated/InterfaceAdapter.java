@@ -1,4 +1,4 @@
-package Depreciated;
+package depreciated;
 
 import com.google.gson.*;
 

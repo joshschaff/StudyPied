@@ -3,7 +3,7 @@
 > **pied** \ ˈpīd \  *adj.* • of two or more colors in blotches [(Marriam-Webster)](https://www.merriam-webster.com/dictionary/pied)
 
 ### What is StudyPied?
-The modern student is commonly tasked with supplementing their learning via the collection and organization of information from a variety of technology based sources. StudyPied provides the end user a one-stop-shop GUI application to aid in the creation of such organized collections, herein refered to as "study guides" or simple "guides."
+The modern student is commonly tasked with supplementing their learning via the collection and organization of information from a variety of technology based content. StudyPied provides the end user a one-stop-shop gui application to aid in the creation of such organized collections, herein refered to as "study guides" or simple "guides."
 
 ### Features
 - Importing of guides from... 
@@ -28,7 +28,7 @@ The modern student is commonly tasked with supplementing their learning via the 
   - [ ] .PDF format
 
 ### Utilized Tools and Technologies
-StudyPied relies on various RESTful APIs and Java libraries to pull in and manage data from multiple digital and web sources. These include:
+StudyPied relies on various RESTful APIs and Java libraries to pull in and manage data from multiple digital and web content sources. These include:
 - **Kotlin** : Chosen for its interoperability with commonly available Java libraries and ease of data management
   - [Data classes](https://kotlinlang.org/docs/reference/data-classes.html) speed up development times by implementing essential utility functions by default
 - **Apache APIs**
@@ -43,7 +43,7 @@ StudyPied relies on various RESTful APIs and Java libraries to pull in and manag
 - **[Quizlet API](https://quizlet.com/api/)** : Retrieves user generated definitions from Quizlet.com
 
 ### Versioning Plan
-The public API is constrained to the StudyGuide and GeneralTerm classes. Modification of these two structures are to be denoted by major version change. Addition of other features such as import/export methods and new data sources will be denoted by a minor version change.
+The public API is constrained to the StudyGuide and GeneralTerm classes. Modification of these two structures are to be denoted by major version change. Addition of other features such as import/export methods and new data content will be denoted by a minor version change.
 - v0.1.0 APUSH specific guide with terms, definitions, queries, and completedness
 - v0.2.0 Guide that takes custom delimiters and categories for any topic
 - v1.0.0 Simple table interpretation support

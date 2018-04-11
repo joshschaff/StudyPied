@@ -1,8 +1,8 @@
-package GUI.Elements;
+package gui.elements;
 
 
 
-import DriveAPI.GeneralTerm;
+import content.publicAPI.GeneralTerm;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,7 +12,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import java.util.ArrayList;
+
 import java.util.List;
 
 /**
@@ -44,6 +44,8 @@ public class ListManager extends HBox {
         showButton = false;
         setAlignment(Pos.CENTER);
         comboBox = new ComboBox(FXCollections.observableArrayList());
+        //comboBox.setPrefWidth(100.0);
+        //comboBox.
 
 
         updateOptions(options);
@@ -69,7 +71,9 @@ public class ListManager extends HBox {
     public void updateOptions(List options) {
 
         comboBox.setItems(FXCollections.observableArrayList(options));
+        //comboBox = new ComboBox(FXCollections.observableArrayList(options));
         //comboBox.getSelectionModel().select(0);
+        //comboBox.setPrefWidth(50.0F);
 
 
         FxUtilTest.autoCompleteComboBoxPlus(comboBox, (typedText, itemToCompare) ->

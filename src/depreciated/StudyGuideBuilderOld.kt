@@ -1,15 +1,15 @@
-package DriveAPI
+package depreciated
 
 import com.google.api.services.drive.Drive
-import java.io.ByteArrayOutputStream
-import java.io.Serializable
+import java.io.*
 
 
 //1FWatZZUFOhlltMeWc3sWR99McHQuCqiOAf82XoHzHYA
 
 
+
 // constructed from a drive file
-class StudyGuideBuilder(
+class StudyGuideBuilderOld(
         id : String,
         drive : Drive) : Serializable {
 
@@ -22,7 +22,7 @@ class StudyGuideBuilder(
 
     private val quesDelim : String = "questions"
 
-    val guide : StudyGuide
+    val guide : StudyGuideOld
 
     init{
         //println(drive.files().get(id))
@@ -34,6 +34,10 @@ class StudyGuideBuilder(
                 //.executeMediaAndDownloadTo(str)
         val str = outputStream.toString()
                 //.toString().replace("\n+", "\n")
+
+
+
+        //.toString().replace("\n+", "\n")
 
 
 
@@ -58,13 +62,13 @@ class StudyGuideBuilder(
 
 
         val terms = list2.subList(list2.indexOf(termDelim)+1, list2.indexOf(peopDelim))
-                .map { str -> GeneralTerm(str, "", false) }
+                .map { str -> GeneralTermOld(str, "", false) }
         val people = list2.subList(list2.indexOf(peopDelim)+1, list2.indexOf(quesDelim))
-                .map { str -> GeneralTerm(str, "", false) }
+                .map { str -> GeneralTermOld(str, "", false) }
         val questions = list2.subList(list2.indexOf(quesDelim)+1, list2.size)
-                .map { str -> GeneralTerm(str, "", false) }
+                .map { str -> GeneralTermOld(str, "", false) }
 
-        guide= StudyGuide(terms,people,questions,title)
+        guide= StudyGuideOld(terms, people, questions, title)
     }
 
     fun assemble() : Unit{}
@@ -72,15 +76,19 @@ class StudyGuideBuilder(
 }
 
 
-data class StudyGuide(var terms : List<GeneralTerm>,
-                      var people : List <GeneralTerm>,
-                      var questions : List <GeneralTerm>,
-                      var title : String) : Serializable
+data class StudyGuideOld(var terms : List<GeneralTermOld>,
+                         var people : List <GeneralTermOld>,
+                         var questions : List <GeneralTermOld>,
+                         var title : String) : Serializable {
+    companion object {
+        private const val serialVersionUID = -182881792088381057
+    }
+}
 
 
 
 
-data class GeneralTerm(val term : String, var definition : String, var complete : Boolean) : Serializable {
+data class GeneralTermOld(val term : String, var definition : String, var complete : Boolean) : Serializable {
     // initial value
     var query : String = term
 

@@ -1,21 +1,14 @@
-package QuizletAPI
+package content.quizletAPI
 
-import DriveAPI.GeneralTerm
-import GUI.Elements.QuizletResultsListView
+import gui.elements.QuizletResultsListView
 import javafx.application.Platform
-import javafx.beans.property.DoubleProperty
-import javafx.beans.property.SimpleDoubleProperty
-import javafx.beans.value.ObservableDoubleValue
-import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.scene.control.ProgressBar
 import org.apache.http.client.fluent.Request
 import org.apache.http.client.utils.URIBuilder
-import org.apache.http.client.utils.URLEncodedUtils
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.URI
-import java.net.URLEncoder
 import java.util.concurrent.FutureTask
 import java.util.regex.Matcher
 import java.util.regex.Pattern
