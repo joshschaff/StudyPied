@@ -7,6 +7,9 @@ import javafx.util.Callback
 import javafx.scene.control.ListCell
 import content.quizletAPI.TermWrapper
 
+import content.search.ResultWrapper
+import content.search.ResultWrapper.*
+
 
 /**
  * Because by far the most common use case for cells is to show textArea to a user, this use case is specially optimized for
@@ -26,7 +29,7 @@ val width = StudyPied.COLUMN_WIDTH - 100.0
 
 // Constructor parameter is in essence a default value
 // Further updates are observed by the items field https://docs.oracle.com/javafx/2/api/javafx/scene/control/ListView.html
-class QuizletResultsListView(terms : ObservableList<TermWrapper>) : ListView<TermWrapper>() {
+class QuizletResultsListView(terms : ObservableList<ResultWrapper<out Any>>) : ListView<ResultWrapper<out Any>>() {
 
     // This allows utilizing the observable property in auto updating
     //var terms : ObservableList<TermWrapper> = terms
@@ -35,9 +38,9 @@ class QuizletResultsListView(terms : ObservableList<TermWrapper>) : ListView<Ter
 
     init {
 
-        cellFactory = object : Callback<ListView<TermWrapper>, ListCell<TermWrapper>> {
-           override fun call(p0: ListView<TermWrapper>): ListCell<TermWrapper> {
-               return TermCell()
+        cellFactory = object : Callback<ListView<ResultWrapper<out Any>>, ListCell<ResultWrapper<out Any>>> {
+           override fun call(p0: ListView<ResultWrapper<out Any>>): ListCell<ResultWrapper<out Any>> {
+               return ResultCell()
             }
         }
         items = terms
@@ -52,9 +55,9 @@ class QuizletResultsListView(terms : ObservableList<TermWrapper>) : ListView<Ter
 }
 
 
-internal class TermCell : ListCell<TermWrapper>() {
-    public override fun updateItem(term: TermWrapper?, empty: Boolean) {
-        super.updateItem(term, empty)
+internal class ResultCell : ListCell<ResultWrapper<out Any>>() {
+    public override fun updateItem(result: ResultWrapper<out Any>?, empty: Boolean) {
+        super.updateItem(result, empty)
 
         if (empty || item == null) {
             setText(null);
@@ -63,48 +66,27 @@ internal class TermCell : ListCell<TermWrapper>() {
             // see explanation at top of class
 
             //hBox.width = listView.width
+            when (result) {
 
+                is ResultWrapper.QuizletResultWrapper -> {
+                    val term = result.term
 
+                    val termBox = LabeledTextArea("[ ${term.term} / ${result.setTitle} ]", term.definition )
+                    termBox.textArea.isEditable = false
+                    termBox.textArea.isWrapText = true
+                    //termBox.maxWidth = super.widthProperty().get() - 25.0
+                    termBox.label.isWrapText = true
+                    // Something arbitraily small
+                    termBox.label.prefWidth = StudyPied.COLUMN_WIDTH-100.0
+                    termBox.textArea.prefWidth = StudyPied.COLUMN_WIDTH-100.0
+                    termBox.textArea.autosize()
+                    //HBox.setHgrow(termBox, Priority.ALWAYS)
+                    graphic = termBox
+                }
+            }
 
-
-            val termBox = LabeledTextArea("[ ${term?.term?.term} / ${term?.setTitle} ]", term?.term?.definition ?: "")
-            termBox.textArea.isEditable = false
-            termBox.textArea.isWrapText = true
-            //termBox.maxWidth = super.widthProperty().get() - 25.0
-            termBox.label.isWrapText = true
-            // Something arbitraily small
-            termBox.label.prefWidth = StudyPied.COLUMN_WIDTH-100.0
-            termBox.textArea.prefWidth = StudyPied.COLUMN_WIDTH-100.0
-            termBox.textArea.autosize()
-            //HBox.setHgrow(termBox, Priority.ALWAYS)
-
-
-            //termBox.autosize()
-            //hBox.autosize()
-
-
-
-            graphic = termBox
-
-            /*
-
-            text = "[ ${term?.term?.term} / ${term?.setTitle} ]"
-            //isWrapText = true
-
-            val textArea = TextArea(term?.term?.definition)
-            textArea.isWrapText = true
-            textArea.prefWidth(200.0)
-            graphic = textArea
-
-            this.contentDisplay = ContentDisplay.BOTTOM
-            //graphic = (Label(item.toString()))
-            //setTextArea(item.toString());
-            this.maxWidth(200.0)*/
         }
 
-        //val cell : ListCell<Term> = ListCell()
-        //textArea = term?.term ?: "null"
-        //children.add(Label(term?.definition))
 
     }
 }

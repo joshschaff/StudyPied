@@ -47,7 +47,7 @@ class QuizletRequestBuilder(val token : TokenHeader, val methodEnum : Methods) {
         return build()
     }
 
-    // for accessing a single term // query??? // or access all and afilter?
+    // for accessing a single term // queries??? // or access all and afilter?
 
     private fun build() : Request {
         val r : Request = methodEnum.method.invoke(uriBuilder.build()).addHeader("Authorization:", "Bearer ${token.access_token}")

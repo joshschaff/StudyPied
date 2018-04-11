@@ -7,7 +7,7 @@ import javafx.application.Application
 import javafx.scene.Scene
 import javafx.stage.Stage
 import content.publicAPI.StudyGuide
-import content.quizletAPI.SearchResults
+import deprecated.QuizletSearchResults
 import content.quizletAPI.TermWrapper
 import content.saveToDocx
 import javafx.collections.FXCollections
@@ -19,6 +19,7 @@ import content.quizletAPI.QuizletObject.QuizletSet as Set
 import content.quizletAPI.QuizletObject.QuizletTerm as QuizletTerm
 import gui.QuizletResultsListView as QListView
 import content.publicAPI.*
+import content.search.SearchManager
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import java.io.ByteArrayInputStream
@@ -39,7 +40,7 @@ import javafx.scene.layout.BorderPane
 /*fun deprecated.main(args : Array<String>) {
 
 
-    for (term in SearchResults("remember the maine").terms) {
+    for (term in QuizletSearchResults("remember the maine").terms) {
         println(term)
     }
 
@@ -150,46 +151,60 @@ class StudyPied : Application() {
     val termManager: ListManager = ListManager(selectedCategory, "Edit Query")
 
 
+
+
     var selectedTerm: GeneralTerm? = null //selectedCategory[0]
         set(value) {
-            termManager.button.isDisable = value == null
-            termManager.checkBox.isDisable = value == null
-            println("we're changing term")
+            // quick and dirty solution to it being updated multiple times
+            if (field != value) {
+                termManager.button.isDisable = value == null
+                termManager.checkBox.isDisable = value == null
+                println("we're changing term")
 
 
-            termManager.checkBox.isSelected = value?.complete ?: false
+                termManager.checkBox.isSelected = value?.complete ?: false
 
-            // Save the old definition
-            saveTerm()
-            // Load in the new definition
-
-
-
-            progressLabel.text = getProgressString()
-
-            // UPDATES THE VIEW OF QUIZLET OBJECTS
-            // TODO :: create loading bar
-            // https://stackoverflow.com/a/9167420
-            // SPECIFIES A THREAD (javafx) WITHIN A THREAD (results updating)!!!!!
-            if (value != null) {
-                definitionBox.updateTerm(value)
-                Thread(Runnable {
-                    progress.progress = 0.0
-                    println("query is: ${value.query}")
-                    val sr : SearchResults = SearchResults(value.query, progress, listView)
+                // Save the old definition
+                saveTerm()
+                // Load in the new definition
 
 
 
-                    val terms: List<TermWrapper> = sr.terms
+                progressLabel.text = getProgressString()
+
+                // UPDATES THE VIEW OF QUIZLET OBJECTS
+                // TODO :: create loading bar
+                // https://stackoverflow.com/a/9167420
+                // SPECIFIES A THREAD (javafx) WITHIN A THREAD (results updating)!!!!!
+                if (value != null) {
+                    definitionBox.updateTerm(value)
+                    Thread(Runnable {
+                        progress.progress = 0.0
+                        println("new term is $value" )
+                        println("queries is: ${value.queries}")
+
+
+                        /*val terms: List<TermWrapper> = value.queries
+                                .map { q -> QuizletSearchResults(q, progress, lis) }
+                        for (query in value.queries) {
+
+                        }
+                        QuizletSearchResults(value.queries, progress, listView)*/
+
+                        if (value.queries != null) {
+                            searchManager.postResults(value.queries)
+                        }
 
 
 
-                }).start()
-            } else listView.items = FXCollections.observableList(FXCollections.observableArrayList())
+                    }).start()
+                } else listView.items = FXCollections.observableList(FXCollections.observableArrayList())
 
 
 
-            field = value
+                field = value
+            }
+
         }
 
 
@@ -200,6 +215,9 @@ class StudyPied : Application() {
                                 // They're already term wrappers
                                 //.map { term -> TermWrapper("", term!!) })))
 
+
+    val searchManager : SearchManager = SearchManager(progress, listView)
+
     // The box for entering your definition
     //var textArea: TextArea = TextArea()
 
@@ -208,8 +226,8 @@ class StudyPied : Application() {
 
 
     /* necessary for binding progress bar each time
-    fun getListViewItems(query : String) : ObservableList<TermWrapper> {
-        val sr : SearchResults = SearchResults(query)
+    fun getListViewItems(queries : String) : ObservableList<TermWrapper> {
+        val sr : QuizletSearchResults = QuizletSearchResults(queries)
         progress.progressProperty().bind(sr.progress)
         return FXCollections.observableList(FXCollections.observableList(sr.terms))
     }*/
@@ -225,6 +243,9 @@ class StudyPied : Application() {
     val center = GridPane()
 
     override fun start(primaryStage: Stage) {
+
+
+        searchManager.endpoints.add(QuizletEndpoint(searchManager, "apush"))
 
         termManager.button.isDisable = true
         termManager.checkBox.isDisable = true
@@ -255,17 +276,22 @@ class StudyPied : Application() {
             if (FxUtilTest.getComboBoxValue(termManager.comboBox) != null ) {
                 selectedTerm = FxUtilTest.getComboBoxValue(termManager.comboBox) as GeneralTerm
             }}
+        // edit eury button
         termManager.setButtonAction {
-            TextInputDialog(selectedTerm?.query).showAndWait()
-                    .ifPresent({ response ->
-                        selectedTerm?.query = response // set query to dialog result
-                    })
+            var response : String = ""
+            do {
+                TextInputDialog(selectedTerm?.queryString()).showAndWait()
+                        .ifPresent({ r ->
+                            response = r // set queries to dialog result
+                        })
+            } while (selectedTerm?.updateQuery(response) == false)
+
             val tempTerm : GeneralTerm? = selectedTerm
             selectedTerm = null
             selectedTerm = tempTerm
             // TODO :: update listmanager secleted toString?
             // Actually this is not really necessary....
-            // Don't need to clog up the UI with the querys...
+            // Don't need to clog up the UI with the queries...
         }
         termManager.setCheckAction { selectedTerm?.complete = termManager.checkBox.isSelected }
 
@@ -273,7 +299,7 @@ class StudyPied : Application() {
         top.children.addAll(listSelector,termManager)
         root.top = top
 
-        //val terms: List<QuizletObject.QuizletTerm> = SearchResults(selectedTerm.query).terms
+        //val terms: List<QuizletObject.QuizletTerm> = QuizletSearchResults(selectedTerm.queries).terms
         //listView.terms = FXCollections
         //        .observableList(FXCollections.observableList(terms.map { term -> TermWrapper("", term!!) }))
 

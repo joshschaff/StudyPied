@@ -1,8 +1,10 @@
-package content.quizletAPI
+package deprecated
 
+import content.quizletAPI.QuizletAPIManager
+import content.quizletAPI.QuizletObject
+import content.quizletAPI.TermWrapper
 import gui.QuizletResultsListView
 import javafx.application.Platform
-import javafx.collections.FXCollections
 import javafx.scene.control.ProgressBar
 import org.apache.http.client.fluent.Request
 import org.apache.http.client.utils.URIBuilder
@@ -16,7 +18,7 @@ import java.util.regex.Pattern
 
 
 // TODO :: Nomenclature... this class is cross platform? (quizlet and google data kinda?)
-class SearchResults(val query: String, val progressBar : ProgressBar, var listView : QuizletResultsListView) {
+class QuizletSearchResults(val query: String, val progressBar : ProgressBar, var listView : QuizletResultsListView) {
 
 
     // Some number from 0 to 1
@@ -27,12 +29,8 @@ class SearchResults(val query: String, val progressBar : ProgressBar, var listVi
         field = value
     }
 
-    private val ids : Array<String> by lazy {
-        getQuizletIDs()
-    }
-
-    val terms : List<TermWrapper> by lazy {
-        getQuizletTerms()
+    init {
+        postQuizletTerms()
     }
 
 
@@ -108,7 +106,7 @@ class SearchResults(val query: String, val progressBar : ProgressBar, var listVi
      * Makes 10 requests for sets
      *
      */
-    private fun getQuizletTerms() : List<TermWrapper> {
+    private fun postQuizletTerms() : List<TermWrapper> {
         // TODO :: in formatting search terms and criteria, remove all non alphanumeric characters and delete all values between parenthesis??? - does newbug put dates
 
         val ids : Array<String> = getQuizletIDs() // Progress = 0.2
@@ -119,6 +117,8 @@ class SearchResults(val query: String, val progressBar : ProgressBar, var listVi
         for (id in ids) {
             //println(manager.getSet(id))
         }
+
+
         val sets : ArrayList<QuizletObject.QuizletSet> = ArrayList<QuizletObject.QuizletSet>()
 
         for (id : String in ids) {
@@ -136,14 +136,19 @@ class SearchResults(val query: String, val progressBar : ProgressBar, var listVi
         val terms : ArrayList<QuizletObject.QuizletTerm> = ArrayList<QuizletObject.QuizletTerm>()
 
         for (set : QuizletObject.QuizletSet in sets) {
-            terms.add(set.terms.maxBy { term -> getContains(term.term + term.definition, query)} ?: QuizletObject.QuizletTerm("", "Term not found", "definition not found", 0))
-            progress += .04
+            //terms.add(set.terms.maxBy { term -> getContains(term.term + term.definition, query)} ?: QuizletObject.QuizletTerm("", "Term not found", "definition not found", 0))
 
+
+            // TODO:: Do you need to do this in another thread..??
             val updateUITask: FutureTask<Unit> =
                     FutureTask(
                             {
-                                listView.items = FXCollections
-                                        .observableList(FXCollections.observableList(terms.indices.map{i -> TermWrapper("", terms[i], sets[i].title)}))
+                                val matchIndex = set.terms.withIndex().maxBy { indexedTerm -> getContains(indexedTerm.value.term + indexedTerm.value.definition, query)}?.index
+                                if (matchIndex != null) {
+                                    //listView.items.add(TermWrapper("", terms[matchIndex], sets[matchIndex].title))
+                                }
+                                //listView.items = FXCollections
+                                 //       .observableList(FXCollections.observableList(terms.indices.map{i -> TermWrapper("", terms[i], sets[i].title)}))
                             },
                             Unit)
 
@@ -151,10 +156,12 @@ class SearchResults(val query: String, val progressBar : ProgressBar, var listVi
             // submit for execution on FX Application Thread:
             Platform.runLater(updateUITask)
 
+            progress += .04
+
         }
         /*val terms : List<QuizletObject.QuizletTerm> = sets.map { set-> set.terms }
                 .map { terms -> terms
-                        .maxBy { term -> getContains(term.term + term.definition, query) } }.onEach { progress += .06 }.filterIsInstance<QuizletObject.QuizletTerm>()
+                        .maxBy { term -> getContains(term.term + term.definition, queries) } }.onEach { progress += .06 }.filterIsInstance<QuizletObject.QuizletTerm>()
 */
         println("Query is : ${query}")
 
