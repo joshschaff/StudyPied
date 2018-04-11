@@ -1,8 +1,8 @@
 import content.DocxGuideBuilder
 import content.driveAPI.*
-import gui.elements.DefinitionBox
-import gui.elements.FxUtilTest
-import gui.elements.ListManager
+import gui.DefinitionBox
+import gui.FxUtilTest
+import gui.ListManager
 import javafx.application.Application
 import javafx.scene.Scene
 import javafx.stage.Stage
@@ -17,7 +17,7 @@ import javafx.scene.control.*
 import javafx.scene.layout.*
 import content.quizletAPI.QuizletObject.QuizletSet as Set
 import content.quizletAPI.QuizletObject.QuizletTerm as QuizletTerm
-import gui.elements.QuizletResultsListView as QListView
+import gui.QuizletResultsListView as QListView
 import content.publicAPI.*
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument
@@ -195,7 +195,7 @@ class StudyPied : Application() {
 
     var progress = ProgressBar(1.0)
 
-    var listView: gui.elements.QuizletResultsListView = gui.elements.QuizletResultsListView(FXCollections
+    var listView: gui.QuizletResultsListView = gui.QuizletResultsListView(FXCollections
             .observableList(FXCollections.observableArrayList()))
                                 // They're already term wrappers
                                 //.map { term -> TermWrapper("", term!!) })))

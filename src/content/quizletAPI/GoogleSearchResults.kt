@@ -1,6 +1,6 @@
 package content.quizletAPI
 
-import gui.elements.QuizletResultsListView
+import gui.QuizletResultsListView
 import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.scene.control.ProgressBar

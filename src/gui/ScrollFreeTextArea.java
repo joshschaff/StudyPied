@@ -1,4 +1,4 @@
-package gui.elements;
+package gui;
 
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleDoubleProperty;

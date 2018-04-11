@@ -1,4 +1,4 @@
-package  gui.elements
+package  gui
 
 import javafx.scene.control.Label
 import javafx.scene.control.TextArea

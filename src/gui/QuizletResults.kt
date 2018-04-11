@@ -1,4 +1,4 @@
-package gui.elements
+package gui
 
 import javafx.collections.ObservableList
 import javafx.scene.control.*

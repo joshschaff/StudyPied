@@ -1,4 +1,4 @@
-package gui.elements
+package gui
 
 
 import content.publicAPI.GeneralTerm
