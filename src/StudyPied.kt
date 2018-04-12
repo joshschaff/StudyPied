@@ -7,8 +7,6 @@ import javafx.application.Application
 import javafx.scene.Scene
 import javafx.stage.Stage
 import content.publicAPI.StudyGuide
-import deprecated.QuizletSearchResults
-import content.quizletAPI.TermWrapper
 import content.saveToDocx
 import javafx.collections.FXCollections
 import javafx.geometry.Insets
@@ -181,21 +179,19 @@ class StudyPied : Application() {
                     Thread(Runnable {
                         progress.progress = 0.0
                         println("new term is $value" )
-                        println("queries is: ${value.queries}")
+                        println("queriesArray is: ${value.queries}")
 
 
-                        /*val terms: List<TermWrapper> = value.queries
+                        /*val terms: List<TermWrapper> = value.queriesArray
                                 .map { q -> QuizletSearchResults(q, progress, lis) }
-                        for (query in value.queries) {
+                        for (query in value.queriesArray) {
 
                         }
-                        QuizletSearchResults(value.queries, progress, listView)*/
+                        QuizletSearchResults(value.queriesArray, progress, listView)*/
 
                         if (value.queries != null) {
-                            searchManager.postResults(value.queries)
+                            searchManager.postResults(value.queries.keys.toTypedArray())
                         }
-
-
 
                     }).start()
                 } else listView.items = FXCollections.observableList(FXCollections.observableArrayList())
@@ -226,8 +222,8 @@ class StudyPied : Application() {
 
 
     /* necessary for binding progress bar each time
-    fun getListViewItems(queries : String) : ObservableList<TermWrapper> {
-        val sr : QuizletSearchResults = QuizletSearchResults(queries)
+    fun getListViewItems(queriesArray : String) : ObservableList<TermWrapper> {
+        val sr : QuizletSearchResults = QuizletSearchResults(queriesArray)
         progress.progressProperty().bind(sr.progress)
         return FXCollections.observableList(FXCollections.observableList(sr.terms))
     }*/
@@ -278,20 +274,23 @@ class StudyPied : Application() {
             }}
         // edit eury button
         termManager.setButtonAction {
-            var response : String = ""
-            do {
-                TextInputDialog(selectedTerm?.queryString()).showAndWait()
-                        .ifPresent({ r ->
-                            response = r // set queries to dialog result
-                        })
-            } while (selectedTerm?.updateQuery(response) == false)
+            selectedTerm?.queries = QueriesMap {
+                val result = TextInputDialog(selectedTerm?.queries.toString()).showAndWait()
+                if (result.isPresent) {
+                    result.get()
+                } else {
+                    // reset to original value if dialog is cancelled
+                    selectedTerm?.queries.toString()
+                }
+            }
 
+            // update search after updating queries
             val tempTerm : GeneralTerm? = selectedTerm
             selectedTerm = null
             selectedTerm = tempTerm
             // TODO :: update listmanager secleted toString?
             // Actually this is not really necessary....
-            // Don't need to clog up the UI with the queries...
+            // Don't need to clog up the UI with the queriesArray...
         }
         termManager.setCheckAction { selectedTerm?.complete = termManager.checkBox.isSelected }
 
@@ -299,7 +298,7 @@ class StudyPied : Application() {
         top.children.addAll(listSelector,termManager)
         root.top = top
 
-        //val terms: List<QuizletObject.QuizletTerm> = QuizletSearchResults(selectedTerm.queries).terms
+        //val terms: List<QuizletObject.QuizletTerm> = QuizletSearchResults(selectedTerm.queriesArray).terms
         //listView.terms = FXCollections
         //        .observableList(FXCollections.observableList(terms.map { term -> TermWrapper("", term!!) }))
 

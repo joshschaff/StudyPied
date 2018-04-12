@@ -71,10 +71,10 @@ class StudyGuideOld(
 
 /*data class GeneralTerm(val term : String, var definition : String, var complete : Boolean) : Serializable {
     // initial value
-    var queries : String = term
+    var queriesArray : String = term
 
 
     override fun toString(): String {
-        return if (term.equals(queries)) term else "$term {$queries}"
+        return if (term.equals(queriesArray)) term else "$term {$queriesArray}"
     }
 }*/

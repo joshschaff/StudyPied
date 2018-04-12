@@ -5,7 +5,6 @@ import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.scene.control.ProgressBar
 import java.util.concurrent.FutureTask
-import javax.xml.transform.Result
 
 /**
  * ======SEARCH MANAGER FOR DUMMIES=====
@@ -28,7 +27,7 @@ class SearchManager(private val progressBar : ProgressBar, private var listView 
         }
 
     // It is SearchManagers job to offset progress by a factor of the number of endpoints
-    // It is the endpoints job to offset progress by a factor of the number of queries
+    // It is the endpoints job to offset progress by a factor of the number of queriesArray
     fun incrementProgress(value : Double) {
         progress += (value / (endpoints.size))
     }
@@ -37,12 +36,12 @@ class SearchManager(private val progressBar : ProgressBar, private var listView 
     val endpoints = ArrayList<ContentEndpoint>()
 
     // Accessed by ContentEnpoints for retrieving search
-    var queries : Array<String> = arrayOf("") // default value updated every search (every call of postResults)
+    var queriesArray: Array<String> = arrayOf("") // default value updated every search (every call of postResults)
 
     fun postResults(queriesParam : Array<String>) {
         listView.items = FXCollections.observableList(FXCollections.observableArrayList())
         progress = 0.0
-        queries = queriesParam
+        queriesArray = queriesParam
         for (e in endpoints) {
             e.postResults()
         }
@@ -60,6 +59,8 @@ class SearchManager(private val progressBar : ProgressBar, private var listView 
 
 
         // submit for execution on FX Application Thread:
+
+
         Platform.runLater(updateUITask)
 
     }
@@ -73,11 +74,11 @@ open abstract class ContentEndpoint(searchManager : SearchManager) {
             field = value
         }
 
-    protected var queries : Array<String> = sm.queries
-        get() = sm.queries
+    protected var queries : Array<String> = sm.queriesArray
+        get() = sm.queriesArray
 
     // It is SearchManagers job to offset progress by a factor of the number of endpoints
-    // It is the endpoints job to offset progress by a factor of the number of queries
+    // It is the endpoints job to offset progress by a factor of the number of queriesArray
     protected fun incrementProgress(value : Double) {
         sm.incrementProgress(value / (queries.size))
     }

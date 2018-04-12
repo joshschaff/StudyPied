@@ -230,6 +230,7 @@ open class DocxGuideBuilder(doc : XWPFDocument, delimiters : List<String>){
                             is XWPFParagraph -> {
                                 // Get rid of blank paragraphs
                                 if (!e.paragraphText.isNullOrBlank()) {
+                                    println("trimmed paragraph = " + e.paragraphText.trim())
                                     generalTerms[i].add(GeneralTerm.SimpleTerm(e.paragraphText.trim()))
                                 }
                             }

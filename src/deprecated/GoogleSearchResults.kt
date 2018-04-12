@@ -161,7 +161,7 @@ class QuizletSearchResults(val query: String, val progressBar : ProgressBar, var
         }
         /*val terms : List<QuizletObject.QuizletTerm> = sets.map { set-> set.terms }
                 .map { terms -> terms
-                        .maxBy { term -> getContains(term.term + term.definition, queries) } }.onEach { progress += .06 }.filterIsInstance<QuizletObject.QuizletTerm>()
+                        .maxBy { term -> getContains(term.term + term.definition, queriesArray) } }.onEach { progress += .06 }.filterIsInstance<QuizletObject.QuizletTerm>()
 */
         println("Query is : ${query}")
 
